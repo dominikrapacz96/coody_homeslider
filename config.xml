@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<module>
+    <name>coody_homeslider</name>
+    <displayName><![CDATA[Coody - Home slider]]></displayName>
+    <version><![CDATA[1.0.1]]></version>
+    <description><![CDATA[Homepage slider with separate desktop/mobile titles and images.]]></description>
+    <author><![CDATA[coody.it]]></author>
+    <tab><![CDATA[front_office_features]]></tab>
+    <is_configurable>1</is_configurable>
+    <need_instance>0</need_instance>
+</module>

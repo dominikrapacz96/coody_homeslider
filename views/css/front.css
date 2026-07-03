@@ -1,0 +1,274 @@
+section.coody-homeslider {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+section.coody-homeslider.coody-homeslider--wide-peek {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  overflow: visible;
+}
+
+section.coody-homeslider .coody-homeslider__inner {
+  position: relative;
+}
+
+section.coody-homeslider .coody-homeslider__nav {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 12;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: fit-content;
+  max-width: min(920px, calc(100% - 2rem));
+  margin: 0;
+  gap: 0;
+  padding: 0;
+  min-height: 0;
+  transform: translateX(-50%);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+section.coody-homeslider .coody-homeslider__titles {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0 -1px;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+section.coody-homeslider .coody-homeslider__titles::-webkit-scrollbar {
+  display: none;
+}
+
+section.coody-homeslider .coody-homeslider__titles > li {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+}
+
+section.coody-homeslider .coody-homeslider__title-item {
+  display: inline-flex;
+  align-items: center;
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  color: #333;
+  font-size: 1.25rem;
+  line-height: 1.2;
+  cursor: pointer;
+  padding: 1.4rem 1.35rem;
+  white-space: nowrap;
+  writing-mode: horizontal-tb;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+section.coody-homeslider .coody-homeslider__titles > li:first-child .coody-homeslider__title-item,
+section.coody-homeslider .coody-homeslider__titles > li + li .coody-homeslider__title-item {
+  margin-left: -1px;
+}
+
+section.coody-homeslider .coody-homeslider__titles > li:has(.coody-homeslider__title-item.is-active),
+section.coody-homeslider .coody-homeslider__titles > li:has(.coody-homeslider__title-item:hover),
+section.coody-homeslider .coody-homeslider__titles > li:has(.coody-homeslider__title-item:focus-visible) {
+  position: relative;
+  z-index: 1;
+  background: #e8e8e8;
+}
+
+section.coody-homeslider .coody-homeslider__title-item:hover,
+section.coody-homeslider .coody-homeslider__title-item:focus-visible,
+section.coody-homeslider .coody-homeslider__title-item.is-active {
+  color: #111;
+}
+
+section.coody-homeslider .coody-homeslider__nav-btn:hover,
+section.coody-homeslider .coody-homeslider__nav-btn:focus-visible {
+  position: relative;
+  z-index: 1;
+  color: #111;
+  background: #e8e8e8;
+  border-radius: 0;
+}
+
+section.coody-homeslider .coody-homeslider__nav-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  max-width: none;
+  padding: 0 1.2rem;
+  border: none;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: #333;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+section.coody-homeslider .coody-homeslider__nav-btn--prev {
+  margin-right: -1px;
+}
+
+section.coody-homeslider .coody-homeslider__nav-btn--next {
+  margin-left: -1px;
+}
+
+section.coody-homeslider .coody-homeslider__nav-btn i {
+  display: block;
+  line-height: 1;
+}
+
+section.coody-homeslider #sliderHome .owl-nav {
+  display: none !important;
+}
+
+section.coody-homeslider #sliderHome,
+section.coody-homeslider .owl-carousel,
+section.coody-homeslider .owl-stage-outer,
+section.coody-homeslider .owl-stage,
+section.coody-homeslider .carousel-item {
+  width: 100%;
+}
+
+section.coody-homeslider .carousel-item > a,
+section.coody-homeslider figure {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+section.coody-homeslider figure {
+  position: relative;
+  overflow: hidden;
+  height: clamp(240px, 42vw, 410px);
+}
+
+section.coody-homeslider picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+section.coody-homeslider #sliderHome img,
+section.coody-homeslider picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  object-position: center center;
+}
+
+section.coody-homeslider #sliderHome .owl-carousel .owl-stage-outer,
+section.coody-homeslider #sliderHome .owl-carousel.owl-drag .owl-item {
+  min-height: clamp(240px, 42vw, 410px);
+}
+
+section.coody-homeslider #sliderHome {
+  max-height: none;
+}
+
+section.coody-homeslider #sliderHome .owl-dots {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  section.coody-homeslider {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  section.coody-homeslider .coody-homeslider__nav {
+    display: none;
+  }
+
+  section.coody-homeslider #sliderHome {
+    overflow: visible;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item {
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item figure {
+    transition: opacity 0.3s ease;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item:not(.center) figure {
+    opacity: 0.55;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item.center figure {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1921px) {
+  section.coody-homeslider .coody-homeslider__inner {
+    overflow: visible;
+  }
+
+  section.coody-homeslider #sliderHome {
+    overflow: visible !important;
+  }
+
+  section.coody-homeslider #sliderHome .owl-stage-outer {
+    overflow: hidden;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item {
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item figure {
+    transition: opacity 0.3s ease;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item:not(.center) figure {
+    opacity: 0.55;
+  }
+
+  section.coody-homeslider #sliderHome .owl-item.center figure {
+    opacity: 1;
+  }
+}

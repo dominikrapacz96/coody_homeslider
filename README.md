@@ -1,82 +1,133 @@
 # Coody Home Slider
 
-Moduł PrestaShop do zarządzania sliderem banerów na stronie głównej. Obsługuje osobne grafiki na desktop i mobile, treści wielojęzyczne oraz konfigurację prędkości przełączania slajdów.
+Moduł slidera banerów na stronie głównej dla **PrestaShop 8.x i 9.x**.
 
-**Wersja:** 1.0.3  
-**Autor:** [coody.it](https://coody.it)  
-**Licencja:** Proprietary
+Autor: [coody.it](https://coody.it)  
+Wersja: **1.0.8**
 
 ## Wymagania
 
-- PrestaShop **8.0.0** – **9.99.99**
-- PHP zgodne z wymaganiami danej wersji PrestaShop
+| Wymaganie | Wersja |
+|-----------|--------|
+| PrestaShop | 8.0.0 – 9.99.99 |
+| PHP | 8.1+ (zalecane przez PS 8) |
+
+Moduł jest **samodzielny** — nie wymaga Owl Carousel ani zmian w motywie po instalacji.
 
 ## Instalacja
 
-1. Skopiuj katalog `coody_homeslider` do `modules/` w instalacji PrestaShop.
-2. W panelu administracyjnym przejdź do **Moduły → Menedżer modułów**.
-3. Wyszukaj **Coody - Slider strony głównej** i kliknij **Zainstaluj**.
+1. Skopiuj folder `coody_homeslider` do `modules/`.
+2. W panelu administracyjnym: **Moduły → Module Manager**.
+3. Znajdź **Coody - Slider strony głównej** i kliknij **Zainstaluj**.
+4. Dodaj slajdy: menu **Coody → Slider** (lub konfiguracja modułu → Zarządzaj slajdami).
+5. Wyłącz moduł `ps_imageslider`, jeśli jest aktywny (może kolidować ze sliderem na stronie głównej).
+6. Wyczyść cache: `php bin/console cache:clear`
 
-Moduł automatycznie utworzy tabele w bazie danych, zarejestruje hooki i doda pozycję w menu **Coody**.
+## Wyświetlanie na stronie głównej
 
-## Konfiguracja
+Moduł rejestruje się automatycznie na hookach:
 
-### Ustawienia modułu
+- `displayWrapperTop` — motyw Classic (nad kontenerem)
+- `displayHomeTop` — standardowy hook w `index.tpl`
+- `displayHomeSliders` — opcjonalny hook niestandardowy (jeśli motyw go definiuje)
 
-W **Moduły → Coody - Slider strony głównej → Konfiguruj** możesz:
+Slider renderuje się **jeden raz** — pierwszy dostępny hook w szablonie wygrywa.
 
-- włączyć lub wyłączyć slider,
-- ustawić prędkość automatycznego przełączania slajdów (domyślnie 5000 ms).
+### Opcjonalnie: własny hook w motywie
+
+Jeśli chcesz slider w konkretnym miejscu layoutu, dodaj w szablonie strony głównej:
+
+```smarty
+{hook h='displayHomeSliders'}
+```
+
+Następnie w **Projektowanie → Pozycje** przypnij moduł do tego hooka.
+
+## Panel administracyjny
+
+### Konfiguracja modułu
+
+- **Włączony** — globalne włączenie/wyłączenie slidera.
+- **Czas slajdu (ms)** — minimalnie 1000 ms; czas autoplay karuzeli.
 
 ### Zarządzanie slajdami
 
-W menu **Coody → Slider strony głównej** dodajesz i edytujesz slajdy. Dla każdego slajdu dostępne są:
+Dla każdego slajdu (per język):
 
 | Pole | Opis |
 |------|------|
-| Tytuł | Nagłówek slajdu (wielojęzyczny) |
-| Opis | Treść HTML wyświetlana na slajdzie |
-| Link | Adres URL po kliknięciu |
-| Podpis (alt) | Tekst alternatywny obrazka |
-| Grafika desktop | Obraz dla szerokich ekranów |
-| Grafika mobile | Osobny obraz dla urządzeń mobilnych (≤ 767 px) |
-| Aktywny | Włączenie / wyłączenie slajdu |
-| Pozycja | Kolejność wyświetlania |
+| Nazwa slajdu | Tytuł w pasku nawigacji (desktop) |
+| Opis | Opcjonalny tekst na slajdzie (HTML) |
+| Link | URL po kliknięciu w slajd |
+| Tekst alternatywny (alt) | Atrybut `alt` obrazka |
+| Grafika desktop | Obraz dla ekranów ≥768px |
+| Grafika mobile | Obraz dla ekranów <768px |
 
-## Wyświetlanie na froncie
+Dostępne akcje: edycja, duplikacja, usuwanie, zmiana kolejności (pozycja).
 
-Slider renderuje się na hooku **`displayHomeSliders`** (nad treścią strony głównej). Moduł rejestruje się na tym hooku automatycznie przy instalacji.
+## Zachowanie na froncie
 
-Opcjonalnie możesz przypiąć moduł także do hooka **`displayHomeTop`** w **Projektowanie → Pozycje**. Moduł renderuje slider tylko raz na stronie, niezależnie od liczby przypiętych hooków.
+### Desktop (768–1920px)
+- Jeden pełny slajd na szerokość.
+- Dolny pasek nawigacji: strzałki + tytuły slajdów.
+- Autoplay z pauzą po najechaniu.
 
-Na stronie głównej ładowane są style (`views/css/front.css`) i skrypt (`views/js/front.js`). Karuzela korzysta z Owl Carousel z lazy loadingiem obrazów.
+### Mobile (≤767px)
+- Podgląd sąsiednich slajdów (`center` + `stagePadding`).
+- Pasek nawigacji ukryty.
 
-## Wielosklepowość
+### Ultra-wide (>1920px)
+- Środkowy slajd max 1920px, po bokach widać fragmenty sąsiednich slajdów.
 
-Moduł obsługuje multistore — slajdy są przypisane do poszczególnych sklepów. Przy duplikacji danych sklepu (`actionShopDataDuplication`) powiązania slajdów są kopiowane do nowego sklepu.
+## Dostosowanie w motywie (opcjonalne)
 
-## Struktura katalogów
+Moduł nie wymaga zmian w motywie. Jeśli chcesz dopasować odstępy tylko na swoim sklepie, dodaj w CSS motywu np.:
+
+```css
+@media (max-width: 767px) {
+  section.coody-homeslider {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+}
+```
+
+Marginesy mobile **nie są** częścią modułu — każdy sklep może je ustawić osobno.
+
+## Struktura plików
 
 ```
 coody_homeslider/
-├── classes/           # Model CoodyHomeSlide
-├── controllers/admin/ # Kontrolery panelu administracyjnego
-├── img/               # Przesłane grafiki slajdów
-├── sql/               # Skrypty instalacji i deinstalacji
-├── translations/      # Tłumaczenia (pl)
-├── upgrade/           # Skrypty aktualizacji wersji
+├── coody_homeslider.php          # Główna klasa modułu
+├── classes/CoodyHomeSlide.php    # Model slajdu (ObjectModel)
+├── controllers/admin/            # Kontroler BO
 ├── views/
-│   ├── css/           # Style frontu
-│   ├── js/            # Logika karuzeli
-│   └── templates/     # Szablony Smarty
-├── coody_homeslider.php
-└── config.xml
+│   ├── css/front.css             # Style slidera i nawigacji
+│   ├── css/owl.carousel.min.css  # Owl Carousel (wbudowany)
+│   ├── js/front.js               # Logika karuzeli i breakpointów
+│   ├── js/owl.carousel.min.js    # Owl Carousel (wbudowany)
+│   └── templates/hook/slider.tpl
+├── img/                          # Grafiki slajdów + placeholder.svg
+├── sql/                          # Tabele bazy danych
+└── upgrade/                      # Skrypty aktualizacji
 ```
 
-## Odinstalowanie
+## Baza danych
 
-Odinstalowanie modułu usuwa tabele `coody_homeslider_slide`, `coody_homeslider_slide_lang` i `coody_homeslider` oraz wpisy konfiguracyjne. Grafiki w katalogu `img/` nie są usuwane automatycznie.
+Tabele tworzone przy instalacji:
 
-## Changelog
+- `ps_coody_homeslider_slide` — slajdy (aktywność, pozycja)
+- `ps_coody_homeslider_slide_lang` — tłumaczenia i grafiki
+- `ps_coody_homeslider` — powiązanie slajd ↔ sklep (multistore)
 
-Historia zmian w pliku [CHANGELOG.md](CHANGELOG.md).
+## Aktualizacja
+
+1. Nadpisz folder modułu nową wersją.
+2. W BO: **Moduły** → znajdź moduł → **Aktualizuj** (jeśli dostępne).
+3. Wyczyść cache.
+
+Historia zmian: [CHANGELOG.md](CHANGELOG.md)
+
+## Licencja
+
+Proprietary — © 2026 coody.it

@@ -3,9 +3,9 @@
  */
 $(function () {
   var $section = $('.coody-homeslider');
-  var $slider = $section.find('#sliderHome');
+  var $slider = $section.find('.coody-homeslider__carousel');
 
-  if (!$slider.length) {
+  if (!$slider.length || typeof $.fn.owlCarousel !== 'function') {
     return;
   }
 
@@ -23,8 +23,33 @@ $(function () {
     return mobileQuery.matches || widePeekQuery.matches;
   }
 
+  function getViewportWidth() {
+    return document.documentElement.clientWidth;
+  }
+
   function getWideStagePadding() {
-    return Math.max(0, Math.round((window.innerWidth - centerSlideMaxWidth) / 2));
+    return Math.max(0, Math.round((getViewportWidth() - centerSlideMaxWidth) / 2));
+  }
+
+  function syncFullWidth() {
+    var section = $section[0];
+
+    if (!section) {
+      return;
+    }
+
+    section.style.width = '';
+    section.style.maxWidth = '';
+    section.style.marginLeft = '';
+    section.style.marginRight = '';
+
+    var viewportWidth = getViewportWidth();
+    var rect = section.getBoundingClientRect();
+
+    section.style.width = viewportWidth + 'px';
+    section.style.maxWidth = viewportWidth + 'px';
+    section.style.marginLeft = -rect.left + 'px';
+    section.style.marginRight = (viewportWidth - rect.right) + 'px';
   }
 
   function updateWidePeekClass() {
@@ -229,6 +254,7 @@ $(function () {
   }
 
   function bootCarousel() {
+    syncFullWidth();
     updateWidePeekClass();
     initCarousel();
   }
@@ -236,9 +262,12 @@ $(function () {
   function scheduleLayoutSync(repositionPeek) {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
+      syncFullWidth();
       syncCarouselLayout(repositionPeek);
     }, 100);
   }
+
+  syncFullWidth();
 
   $slider.on('initialized.owl.carousel changed.owl.carousel', function (e) {
     if (!e.namespace) {
@@ -250,8 +279,10 @@ $(function () {
   });
 
   $slider.on('initialized.owl.carousel', function () {
+    syncFullWidth();
     syncCarouselLayout(true);
     setTimeout(function () {
+      syncFullWidth();
       syncCarouselLayout(true);
     }, 100);
   });
@@ -263,6 +294,8 @@ $(function () {
   });
 
   $(window).on('load', function () {
+    syncFullWidth();
+
     if (isPeekMode()) {
       eagerLoadSlideImages();
     }

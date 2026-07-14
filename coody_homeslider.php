@@ -26,7 +26,7 @@ class Coody_Homeslider extends Module
     {
         $this->name = 'coody_homeslider';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.3';
+        $this->version = '1.0.8';
         $this->author = 'coody.it';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -47,10 +47,11 @@ class Coody_Homeslider extends Module
             && Configuration::updateValue(self::CONFIG_ENABLED, 1)
             && Configuration::updateValue(self::CONFIG_SPEED, 5000)
             && $this->registerHook('displayHeader')
+            && $this->registerHook('displayWrapperTop')
             && $this->registerHook('displayHomeTop')
             && $this->registerHook('displayHomeSliders')
             && $this->registerHook('actionShopDataDuplication')
-            && $this->moveToHookTop('displayHomeSliders');
+            && $this->ensureFrontHooks();
     }
 
     public function uninstall(): bool
@@ -81,7 +82,7 @@ class Coody_Homeslider extends Module
         $output .= '<a class="btn btn-primary" href="' . htmlspecialchars($slidesUrl, ENT_QUOTES, 'UTF-8') . '">';
         $output .= '<i class="icon-picture"></i> ' . $this->l('Zarządzaj slajdami') . '</a>';
         $output .= '<p class="help-block" style="margin-top:12px;">';
-        $output .= $this->l('Slider wyświetla się na hooku displayHomeSliders (nad treścią strony głównej). Opcjonalnie możesz przypiąć moduł też do displayHomeTop w Projektowanie → Pozycje.');
+        $output .= $this->l('Slider wyświetla się automatycznie na stronie głównej (displayWrapperTop / displayHomeTop). Nie wymaga zmian w motywie.');
         $output .= '</p></div>';
 
         return $output;
@@ -94,9 +95,21 @@ class Coody_Homeslider extends Module
         }
 
         $this->context->controller->registerStylesheet(
+            'module-coody-homeslider-owl',
+            'modules/' . $this->name . '/views/css/owl.carousel.min.css',
+            ['media' => 'all', 'priority' => 140]
+        );
+
+        $this->context->controller->registerStylesheet(
             'module-coody-homeslider',
             'modules/' . $this->name . '/views/css/front.css',
-            ['media' => 'all', 'priority' => 150]
+            ['media' => 'all', 'priority' => 250]
+        );
+
+        $this->context->controller->registerJavascript(
+            'module-coody-homeslider-owl',
+            'modules/' . $this->name . '/views/js/owl.carousel.min.js',
+            ['position' => 'bottom', 'priority' => 190]
         );
 
         $this->context->controller->registerJavascript(
@@ -104,6 +117,11 @@ class Coody_Homeslider extends Module
             'modules/' . $this->name . '/views/js/front.js',
             ['position' => 'bottom', 'priority' => 200]
         );
+    }
+
+    public function hookDisplayWrapperTop(array $params): string
+    {
+        return $this->renderSliderOnce($params);
     }
 
     public function hookDisplayHomeTop(array $params): string
@@ -292,6 +310,7 @@ class Coody_Homeslider extends Module
                 'coody_homeslider' => [
                     'slides' => $slides,
                     'speed' => max(1000, (int) Configuration::get(self::CONFIG_SPEED)),
+                    'placeholder_url' => $this->_path . 'img/placeholder.svg',
                 ],
             ]);
         }
@@ -334,7 +353,7 @@ class Coody_Homeslider extends Module
                         'label' => $this->l('Czas slajdu (ms)'),
                         'name' => self::CONFIG_SPEED,
                         'class' => 'fixed-width-sm',
-                        'desc' => $this->l('Minimalnie 1000 ms. Używane przez karuzelę Owl (jeśli skonfigurowana w motywie).'),
+                        'desc' => $this->l('Minimalnie 1000 ms. Czas wyświetlania pojedynczego slajdu.'),
                     ],
                 ],
                 'submit' => [
@@ -499,11 +518,19 @@ class Coody_Homeslider extends Module
         }
 
         $this->unregisterHook('displayHome');
-        $this->registerHook('displayHomeSliders');
-        $this->registerHook('displayHomeTop');
         $this->registerHook('displayHeader');
+        $this->registerHook('displayWrapperTop');
+        $this->registerHook('displayHomeTop');
+        $this->registerHook('displayHomeSliders');
 
-        return $this->moveToHookTop('displayHomeSliders');
+        $ok = true;
+        foreach (['displayHomeSliders', 'displayWrapperTop', 'displayHomeTop'] as $hookName) {
+            if ((int) Hook::getIdByName($hookName) > 0) {
+                $ok = $this->moveToHookTop($hookName) && $ok;
+            }
+        }
+
+        return $ok;
     }
 
     private function moveToHookTop(string $hookName): bool

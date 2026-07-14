@@ -2,6 +2,21 @@
 
 Wszystkie istotne zmiany w module **Coody Home Slider** (`coody_homeslider`).
 
+## [1.0.9] — 2026-07-14
+
+### Naprawione
+- Białe slajdy od drugiego wzwyż przy działającym ładowaniu grafik w Network — motyw (Bootstrap) ukrywał `.carousel-item` bez klasy `.active`; Owl nie przełącza tej klasy.
+- Lazy load Owl Carousel na desktopie (768–1920 px) — kolejne slajdy zostawały na placeholderze mimo pobrania obrazków.
+- Błąd upgrade modułu na PHP 8.1+ (`clearCache(): void` zwracane jako `bool` w skryptach `upgrade-*.php`) — moduł był wyłączany po nieudanej aktualizacji.
+
+### Zmienione
+- Slajdy w szablonie: klasa `coody-homeslider__slide` zamiast `carousel-item` (brak konfliktu z Bootstrap).
+- Obrazki slajdów ładują się bezpośrednio z `src` (bez `data-src` / `owl-lazy`).
+- `lazyLoad: false` w Owl Carousel.
+- `repairSlideImages()` po refresh/clone karuzeli (zabezpieczenie przy `loop`).
+
+---
+
 ## [1.0.8] — 2026-07-14
 
 ### Zmienione

@@ -195,11 +195,17 @@ section.coody-homeslider .coody-homeslider__carousel,
 section.coody-homeslider .owl-carousel,
 section.coody-homeslider .owl-stage-outer,
 section.coody-homeslider .owl-stage,
-section.coody-homeslider .carousel-item {
+section.coody-homeslider .coody-homeslider__slide {
   width: 100%;
+  display: block;
 }
 
-section.coody-homeslider .carousel-item > a,
+/* Motyw (Bootstrap) ukrywa .carousel-item bez .active — Owl nie dodaje tej klasy */
+section.coody-homeslider .carousel-item {
+  display: block !important;
+}
+
+section.coody-homeslider .coody-homeslider__slide > a,
 section.coody-homeslider figure {
   display: block;
   width: 100%;

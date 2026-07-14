@@ -3,7 +3,7 @@
 Moduł slidera banerów na stronie głównej dla **PrestaShop 8.x i 9.x**.
 
 Autor: [coody.it](https://coody.it)  
-Wersja: **1.0.8**
+Wersja: **1.0.9**
 
 ## Wymagania
 

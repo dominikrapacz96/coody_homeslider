@@ -3,7 +3,7 @@
   <div class="coody-homeslider__inner">
     <div class="coody-homeslider__carousel owl-carousel" role="region" aria-roledescription="{l s='karuzela' d='Shop.Theme.Global'}" data-coody-speed="{$coody_homeslider.speed|intval}">
       {foreach from=$coody_homeslider.slides item=slide name=coody_hs}
-        <div class="carousel-item{if $smarty.foreach.coody_hs.first} active{/if}" role="group" aria-roledescription="{l s='slajd' d='Shop.Theme.Global'}" aria-label="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}"{if !$smarty.foreach.coody_hs.first} aria-hidden="true"{/if}>
+        <div class="coody-homeslider__slide" role="group" aria-roledescription="{l s='slajd' d='Shop.Theme.Global'}" aria-label="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}" data-coody-image-desktop="{$slide.image_url|escape:'html':'UTF-8'}" data-coody-image-mobile="{$slide.image_mobile_url|escape:'html':'UTF-8'}">
           {if $slide.url}
             <a href="{$slide.url|escape:'htmlall':'UTF-8'}"{if $slide.legend} title="{$slide.legend|escape:'htmlall':'UTF-8'}"{/if}>
           {/if}
@@ -11,12 +11,12 @@
                 {if $slide.image_mobile_url && $slide.image_url}
                   <picture>
                     <source media="(max-width: 767px)" srcset="{$slide.image_mobile_url|escape:'html':'UTF-8'}">
-                    <img class="owl-lazy coody-homeslider__image coody-homeslider__image--desktop" loading="lazy" src="{$coody_homeslider.placeholder_url|escape:'html':'UTF-8'}" data-src="{$slide.image_url|escape:'html':'UTF-8'}" alt="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}">
+                    <img class="coody-homeslider__image coody-homeslider__image--desktop" src="{$slide.image_url|escape:'html':'UTF-8'}" alt="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}">
                   </picture>
                 {elseif $slide.image_url}
-                  <img class="owl-lazy coody-homeslider__image" loading="lazy" src="{$coody_homeslider.placeholder_url|escape:'html':'UTF-8'}" data-src="{$slide.image_url|escape:'html':'UTF-8'}" alt="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}">
+                  <img class="coody-homeslider__image" src="{$slide.image_url|escape:'html':'UTF-8'}" alt="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}">
                 {elseif $slide.image_mobile_url}
-                  <img class="owl-lazy coody-homeslider__image coody-homeslider__image--mobile-only" loading="lazy" src="{$coody_homeslider.placeholder_url|escape:'html':'UTF-8'}" data-src="{$slide.image_mobile_url|escape:'html':'UTF-8'}" alt="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}">
+                  <img class="coody-homeslider__image coody-homeslider__image--mobile-only" src="{$slide.image_mobile_url|escape:'html':'UTF-8'}" alt="{$slide.legend|default:$slide.title|escape:'htmlall':'UTF-8'}">
                 {/if}
 
                 {if $slide.description}

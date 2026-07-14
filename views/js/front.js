@@ -83,6 +83,31 @@ $(function () {
     };
   }
 
+  function repairSlideImages() {
+    $slider.find('.coody-homeslider__slide, .carousel-item').each(function () {
+      var $slide = $(this);
+      var $img = $slide.find('figure img').first();
+
+      if (!$img.length) {
+        return;
+      }
+
+      var src = $img.attr('src');
+
+      if (src && src.indexOf('placeholder') === -1) {
+        return;
+      }
+
+      var desktopSrc = $slide.data('coody-image-desktop') || $img.data('coody-image-desktop');
+      var mobileSrc = $slide.data('coody-image-mobile') || $img.data('coody-image-mobile');
+      var nextSrc = mobileQuery.matches && mobileSrc ? mobileSrc : desktopSrc;
+
+      if (nextSrc) {
+        $img.attr('src', nextSrc);
+      }
+    });
+  }
+
   function eagerLoadSlideImages() {
     $slider.find('img.owl-lazy').each(function () {
       var $img = $(this);
@@ -198,10 +223,12 @@ $(function () {
     }
 
     $slider.trigger('refresh.owl.carousel');
+    repairSlideImages();
 
     if (repositionPeek && isPeekMode()) {
       settlePeekCarouselPosition();
       $slider.trigger('refresh.owl.carousel');
+      repairSlideImages();
     }
 
     isSyncingLayout = false;
@@ -220,7 +247,7 @@ $(function () {
     $slider.owlCarousel({
       loop: hasMultipleSlides,
       nav: false,
-      lazyLoad: !isPeekMode(),
+      lazyLoad: false,
       autoplay: hasMultipleSlides,
       autoplayTimeout: speed,
       autoplayHoverPause: true,
@@ -269,13 +296,17 @@ $(function () {
 
   syncFullWidth();
 
-  $slider.on('initialized.owl.carousel changed.owl.carousel', function (e) {
+  $slider.on('initialized.owl.carousel changed.owl.carousel refreshed.owl.carousel', function (e) {
     if (!e.namespace) {
       return;
     }
 
-    var carousel = e.relatedTarget;
-    setActiveTitle(carousel.relative(carousel.current()));
+    repairSlideImages();
+
+    if (e.type === 'changed' || e.type === 'initialized') {
+      var carousel = e.relatedTarget;
+      setActiveTitle(carousel.relative(carousel.current()));
+    }
   });
 
   $slider.on('initialized.owl.carousel', function () {

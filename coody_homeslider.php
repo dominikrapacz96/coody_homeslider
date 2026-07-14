@@ -26,7 +26,7 @@ class Coody_Homeslider extends Module
     {
         $this->name = 'coody_homeslider';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.8';
+        $this->version = '1.0.9';
         $this->author = 'coody.it';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -285,9 +285,11 @@ class Coody_Homeslider extends Module
         return (string) ($fallbackRows[$slideId][$field] ?? '');
     }
 
-    public function clearCache(): void
+    public function clearCache(): bool
     {
         $this->_clearCache(self::TPL_SLIDER);
+
+        return true;
     }
 
     protected function renderSliderOnce(array $params): string

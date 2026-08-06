@@ -234,10 +234,39 @@ class Coody_Homeslider extends Module
                 'legend' => $this->resolveSlideLangValue($row, $fallbackRows, $slideId, 'legend'),
                 'image_url' => $image !== '' ? $imgBase . $image : '',
                 'image_mobile_url' => $imageMobile !== '' ? $imgBase . $imageMobile : '',
+                'image_webp_url' => $this->resolveWebpUrl($imgBase, $image),
+                'image_mobile_webp_url' => $this->resolveWebpUrl($imgBase, $imageMobile),
             ];
         }
 
         return $slides;
+    }
+
+    /**
+     * Return WebP sibling URL when a converted file exists next to the original.
+     */
+    private function resolveWebpUrl(string $imgBase, string $filename): string
+    {
+        if ($filename === '') {
+            return '';
+        }
+
+        $webpName = (string) preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $filename);
+        if ($webpName === '' || $webpName === $filename) {
+            // Already webp (or unsupported)
+            if (preg_match('/\.webp$/i', $filename)) {
+                return $imgBase . $filename;
+            }
+
+            return '';
+        }
+
+        $webpPath = _PS_MODULE_DIR_ . 'coody_homeslider/img/' . $webpName;
+        if (!is_file($webpPath)) {
+            return '';
+        }
+
+        return $imgBase . $webpName;
     }
 
     /**

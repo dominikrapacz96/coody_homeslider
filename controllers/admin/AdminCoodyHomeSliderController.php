@@ -341,6 +341,16 @@ class AdminCoodyHomeSliderController extends ModuleAdminController
             return false;
         }
 
+        // Keep a WebP sibling for front-office <picture> sources.
+        if (!preg_match('/\.webp$/i', $destName)) {
+            $webpName = (string) preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $destName);
+            if ($webpName && $webpName !== $destName) {
+                $webpPath = $this->slideImageDir . $webpName;
+                $quality = (int) Configuration::get('PS_WEBP_QUALITY') ?: 80;
+                ImageManager::resize($tempName, $webpPath, null, null, 'webp', false, $webpError, $tw, $th, $quality);
+            }
+        }
+
         @unlink($tempName);
 
         return $destName;
@@ -355,6 +365,17 @@ class AdminCoodyHomeSliderController extends ModuleAdminController
         $path = $this->slideImageDir . $filename;
         if (is_file($path)) {
             @unlink($path);
+        }
+
+        // Also remove generated WebP sibling, if any.
+        if (!preg_match('/\.webp$/i', $filename)) {
+            $webpName = (string) preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $filename);
+            if ($webpName && $webpName !== $filename) {
+                $webpPath = $this->slideImageDir . $webpName;
+                if (is_file($webpPath)) {
+                    @unlink($webpPath);
+                }
+            }
         }
     }
 

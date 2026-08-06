@@ -7,7 +7,7 @@ class AdminCoodyController extends ModuleAdminController
 {
     public function init()
     {
-        $candidates = ['AdminDsCheckout', 'AdminCoodyHomeSlider'];
+        $candidates = ['AdminDsCheckout', 'AdminCoodyHomeSlider', 'AdminDsContacts', 'AdminDsContactsElement'];
 
         foreach ($candidates as $className) {
             $tabId = (int) Tab::getIdFromClassName($className);

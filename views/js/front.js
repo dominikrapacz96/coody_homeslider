@@ -20,7 +20,8 @@ $(function () {
   var isSyncingLayout = false;
 
   function isPeekMode() {
-    return mobileQuery.matches || widePeekQuery.matches;
+    // Dermia mobile: full-bleed (bez peek). Peek tylko przy wielu slajdach / ultra-wide.
+    return (mobileQuery.matches && hasMultipleSlides) || (widePeekQuery.matches && hasMultipleSlides);
   }
 
   function getViewportWidth() {
@@ -58,10 +59,11 @@ $(function () {
 
   function getLayoutSettings() {
     if (mobileQuery.matches) {
+      // Pełna szerokość na mobile (Figma) — bez stagePadding 40.
       return {
-        center: true,
-        stagePadding: 40,
-        margin: 10,
+        center: false,
+        stagePadding: 0,
+        margin: 0,
         loop: hasMultipleSlides,
       };
     }
@@ -190,9 +192,9 @@ $(function () {
     if (owl.options.responsive) {
       if (owl.options.responsive[0]) {
         $.extend(owl.options.responsive[0], {
-          center: true,
-          stagePadding: 40,
-          margin: 10,
+          center: false,
+          stagePadding: 0,
+          margin: 0,
           loop: hasMultipleSlides,
         });
       }
@@ -259,9 +261,9 @@ $(function () {
       startPosition: 0,
       responsive: {
         0: {
-          center: true,
-          stagePadding: 40,
-          margin: 10,
+          center: false,
+          stagePadding: 0,
+          margin: 0,
           loop: hasMultipleSlides,
         },
         768: {

@@ -31,6 +31,12 @@ class CoodyHomeSlide extends ObjectModel
     /** @var string */
     public $image_mobile;
 
+    /** @var string */
+    public $button_title;
+
+    /** @var string */
+    public $button_link;
+
     public static $definition = [
         'table' => 'coody_homeslider_slide',
         'primary' => 'id_coody_homeslider_slide',
@@ -44,6 +50,8 @@ class CoodyHomeSlide extends ObjectModel
             'legend' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'image' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'image_mobile' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'button_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'button_link' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isUrl', 'size' => 255],
         ],
     ];
 

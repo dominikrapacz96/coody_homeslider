@@ -2,6 +2,20 @@
 
 Wszystkie istotne zmiany w module **Coody Home Slider** (`coody_homeslider`).
 
+## [1.0.11] — 2026-08-12
+
+### Dodane
+- Pola slajdu w BO: **Tekst przycisku** (`button_title`) i **Link przycisku** (`button_link`) — wielojęzyczne CTA na slajdzie.
+
+---
+
+## [1.0.10] — 2026-08-12
+
+### Naprawione
+- Zakładka nadrzędna **Coody** w BO: pusta `icon` (jak w `ds_contacts` / `advancedcms`). W PrestaShop 8 new-theme (`nav_bar.tpl`) root z ikoną renderuje się jako pojedynczy link bez submenu.
+
+---
+
 ## [1.0.9] — 2026-07-14
 
 ### Naprawione

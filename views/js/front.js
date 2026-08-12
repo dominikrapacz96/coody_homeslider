@@ -1,5 +1,8 @@
 /**
  * Coody Home Slider — karuzela + dolny pasek z tytułami.
+ *
+ * Theme may add .coody-homeslider--contained (e.g. hummingbird): then skip
+ * full-bleed syncFullWidth and widescreen peek (>=1921) to avoid side flicker.
  */
 $(function () {
   var $section = $('.coody-homeslider');
@@ -9,6 +12,7 @@ $(function () {
     return;
   }
 
+  var isContained = $section.hasClass('coody-homeslider--contained');
   var speed = parseInt($slider.data('coody-speed'), 10) || 5000;
   var $titleItems = $section.find('.coody-homeslider__title-item');
   var slideCount = $titleItems.length || $slider.children().length;
@@ -19,8 +23,18 @@ $(function () {
   var resizeTimer = null;
   var isSyncingLayout = false;
 
+  var flatLayout = {
+    center: false,
+    stagePadding: 0,
+    margin: 0,
+    loop: hasMultipleSlides,
+  };
+
   function isPeekMode() {
-    // Dermia mobile: full-bleed (bez peek). Peek tylko przy wielu slajdach / ultra-wide.
+    if (isContained) {
+      return false;
+    }
+
     return (mobileQuery.matches && hasMultipleSlides) || (widePeekQuery.matches && hasMultipleSlides);
   }
 
@@ -33,6 +47,10 @@ $(function () {
   }
 
   function syncFullWidth() {
+    if (isContained) {
+      return;
+    }
+
     var section = $section[0];
 
     if (!section) {
@@ -54,12 +72,20 @@ $(function () {
   }
 
   function updateWidePeekClass() {
+    if (isContained) {
+      $section.removeClass('coody-homeslider--wide-peek');
+      return;
+    }
+
     $section.toggleClass('coody-homeslider--wide-peek', widePeekQuery.matches && hasMultipleSlides);
   }
 
   function getLayoutSettings() {
+    if (isContained) {
+      return flatLayout;
+    }
+
     if (mobileQuery.matches) {
-      // Pełna szerokość na mobile (Figma) — bez stagePadding 40.
       return {
         center: false,
         stagePadding: 0,
@@ -77,12 +103,7 @@ $(function () {
       };
     }
 
-    return {
-      center: false,
-      stagePadding: 0,
-      margin: 0,
-      loop: hasMultipleSlides,
-    };
+    return flatLayout;
   }
 
   function repairSlideImages() {
@@ -185,36 +206,30 @@ $(function () {
     isSyncingLayout = true;
 
     var layout = getLayoutSettings();
-    var widePadding = getWideStagePadding();
+    var widePadding = isContained ? 0 : getWideStagePadding();
 
     updateWidePeekClass();
 
     if (owl.options.responsive) {
       if (owl.options.responsive[0]) {
-        $.extend(owl.options.responsive[0], {
-          center: false,
-          stagePadding: 0,
-          margin: 0,
-          loop: hasMultipleSlides,
-        });
+        $.extend(owl.options.responsive[0], flatLayout);
       }
 
       if (owl.options.responsive[768]) {
-        $.extend(owl.options.responsive[768], {
-          center: false,
-          stagePadding: 0,
-          margin: 0,
-          loop: hasMultipleSlides,
-        });
+        $.extend(owl.options.responsive[768], flatLayout);
       }
 
       if (owl.options.responsive[1921]) {
-        $.extend(owl.options.responsive[1921], {
-          center: true,
-          stagePadding: widePadding,
-          margin: 16,
-          loop: hasMultipleSlides,
-        });
+        if (isContained) {
+          $.extend(owl.options.responsive[1921], flatLayout);
+        } else {
+          $.extend(owl.options.responsive[1921], {
+            center: true,
+            stagePadding: widePadding,
+            margin: 16,
+            loop: hasMultipleSlides,
+          });
+        }
       }
     }
 
@@ -246,6 +261,15 @@ $(function () {
   }
 
   function initCarousel() {
+    var wideBreakpoint = isContained
+      ? flatLayout
+      : {
+          center: true,
+          stagePadding: getWideStagePadding(),
+          margin: 16,
+          loop: hasMultipleSlides,
+        };
+
     $slider.owlCarousel({
       loop: hasMultipleSlides,
       nav: false,
@@ -260,24 +284,9 @@ $(function () {
       stagePadding: 0,
       startPosition: 0,
       responsive: {
-        0: {
-          center: false,
-          stagePadding: 0,
-          margin: 0,
-          loop: hasMultipleSlides,
-        },
-        768: {
-          center: false,
-          stagePadding: 0,
-          margin: 0,
-          loop: hasMultipleSlides,
-        },
-        1921: {
-          center: true,
-          stagePadding: getWideStagePadding(),
-          margin: 16,
-          loop: hasMultipleSlides,
-        },
+        0: $.extend({}, flatLayout),
+        768: $.extend({}, flatLayout),
+        1921: $.extend({}, wideBreakpoint),
       },
     });
   }
@@ -312,6 +321,11 @@ $(function () {
   });
 
   $slider.on('initialized.owl.carousel', function () {
+    if (isContained) {
+      // Contained: no full-bleed / peek reflow after init (avoids side flicker).
+      return;
+    }
+
     syncFullWidth();
     syncCarouselLayout(true);
     setTimeout(function () {
@@ -321,12 +335,16 @@ $(function () {
   });
 
   $slider.on('resized.owl.carousel', function () {
-    if (widePeekQuery.matches && hasMultipleSlides) {
+    if (!isContained && widePeekQuery.matches && hasMultipleSlides) {
       scheduleLayoutSync(false);
     }
   });
 
   $(window).on('load', function () {
+    if (isContained) {
+      return;
+    }
+
     syncFullWidth();
 
     if (isPeekMode()) {
@@ -344,9 +362,12 @@ $(function () {
     mobileQuery.addEventListener('change', function () {
       scheduleLayoutSync(true);
     });
-    widePeekQuery.addEventListener('change', function () {
-      scheduleLayoutSync(true);
-    });
+
+    if (!isContained) {
+      widePeekQuery.addEventListener('change', function () {
+        scheduleLayoutSync(true);
+      });
+    }
   }
 
   $section.find('.coody-homeslider__nav-btn--prev').on('click', function () {

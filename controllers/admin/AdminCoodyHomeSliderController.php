@@ -64,7 +64,7 @@ class AdminCoodyHomeSliderController extends ModuleAdminController
         foreach (Language::getLanguages(false) as $language) {
             $idLang = (int) $language['id_lang'];
 
-            foreach (['title', 'description', 'url', 'legend', 'image', 'image_mobile'] as $field) {
+            foreach (['title', 'description', 'url', 'legend', 'image', 'image_mobile', 'button_title', 'button_link'] as $field) {
                 $values = $source->{$field};
                 if (is_array($values) && isset($values[$idLang])) {
                     if (!is_array($duplicate->{$field})) {
@@ -188,9 +188,24 @@ class AdminCoodyHomeSliderController extends ModuleAdminController
                 ],
                 [
                     'type' => 'text',
+                    'label' => $this->module->l('Tekst przycisku'),
+                    'name' => 'button_title',
+                    'lang' => true,
+                    'desc' => $this->module->l('Opcjonalnie. Wyświetlany na slajdzie jako CTA.'),
+                ],
+                [
+                    'type' => 'text',
+                    'label' => $this->module->l('Link przycisku'),
+                    'name' => 'button_link',
+                    'lang' => true,
+                    'desc' => $this->module->l('URL docelowy przycisku. Wymagany razem z tekstem przycisku.'),
+                ],
+                [
+                    'type' => 'text',
                     'label' => $this->module->l('Link'),
                     'name' => 'url',
                     'lang' => true,
+                    'desc' => $this->module->l('Opcjonalny link całego slajdu (klik w obraz).'),
                 ],
                 [
                     'type' => 'text',

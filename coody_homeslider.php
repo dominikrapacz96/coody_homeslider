@@ -26,7 +26,7 @@ class Coody_Homeslider extends Module
     {
         $this->name = 'coody_homeslider';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.9';
+        $this->version = '1.0.11';
         $this->author = 'coody.it';
         $this->need_instance = 0;
         $this->bootstrap = true;
@@ -232,6 +232,8 @@ class Coody_Homeslider extends Module
                 'description' => $this->resolveSlideLangValue($row, $fallbackRows, $slideId, 'description'),
                 'url' => $this->resolveSlideLangValue($row, $fallbackRows, $slideId, 'url'),
                 'legend' => $this->resolveSlideLangValue($row, $fallbackRows, $slideId, 'legend'),
+                'button_title' => $this->resolveSlideLangValue($row, $fallbackRows, $slideId, 'button_title'),
+                'button_link' => $this->resolveSlideLangValue($row, $fallbackRows, $slideId, 'button_link'),
                 'image_url' => $image !== '' ? $imgBase . $image : '',
                 'image_mobile_url' => $imageMobile !== '' ? $imgBase . $imageMobile : '',
                 'image_webp_url' => $this->resolveWebpUrl($imgBase, $image),
@@ -282,7 +284,7 @@ class Coody_Homeslider extends Module
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            'SELECT `id_coody_homeslider_slide`, `title`, `description`, `url`, `legend`, `image`, `image_mobile`
+            'SELECT `id_coody_homeslider_slide`, `title`, `description`, `url`, `legend`, `image`, `image_mobile`, `button_title`, `button_link`
             FROM `' . _DB_PREFIX_ . 'coody_homeslider_slide_lang`
             WHERE `id_lang` = ' . (int) $idLang . '
             AND `id_coody_homeslider_slide` IN (' . implode(',', $slideIds) . ')'
@@ -430,6 +432,8 @@ class Coody_Homeslider extends Module
             `legend` VARCHAR(255) NULL,
             `image` VARCHAR(255) NULL,
             `image_mobile` VARCHAR(255) NULL,
+            `button_title` VARCHAR(255) NULL,
+            `button_link` VARCHAR(255) NULL,
             PRIMARY KEY (`id_coody_homeslider_slide`, `id_lang`)
         ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8mb4;';
 
@@ -482,11 +486,51 @@ class Coody_Homeslider extends Module
     }
 
     /**
-     * Grupa „Coody” w menu BO (jak ds_checkout) — tworzy tylko gdy nie istnieje.
+     * CTA fields on slide lang table (1.0.11+).
+     */
+    public function ensureButtonFields(): bool
+    {
+        $table = _DB_PREFIX_ . 'coody_homeslider_slide_lang';
+        $columns = Db::getInstance()->executeS('SHOW COLUMNS FROM `' . bqSQL($table) . '`');
+        if (!is_array($columns)) {
+            return false;
+        }
+
+        $existing = [];
+        foreach ($columns as $column) {
+            $existing[(string) $column['Field']] = true;
+        }
+
+        $ok = true;
+        if (!isset($existing['button_title'])) {
+            $ok = $ok && Db::getInstance()->execute(
+                'ALTER TABLE `' . bqSQL($table) . '` ADD `button_title` VARCHAR(255) NULL'
+            );
+        }
+        if (!isset($existing['button_link'])) {
+            $ok = $ok && Db::getInstance()->execute(
+                'ALTER TABLE `' . bqSQL($table) . '` ADD `button_link` VARCHAR(255) NULL'
+            );
+        }
+
+        return (bool) $ok;
+    }
+
+    /**
+     * Grupa „Coody” w menu BO — tworzy tylko gdy nie istnieje.
+     * Root musi mieć pustą ikonę: new-theme nav_bar.tpl przy icon != ''
+     * renderuje jedną zakładkę bez dzieci (submenu znika).
      */
     public function ensureAdminCoodyParentTab(): bool
     {
-        if (Tab::getIdFromClassName('AdminCoody')) {
+        $id = (int) Tab::getIdFromClassName('AdminCoody');
+        if ($id > 0) {
+            $existing = new Tab($id);
+            if (Validate::isLoadedObject($existing) && (string) $existing->icon !== '') {
+                $existing->icon = '';
+                $existing->update();
+            }
+
             return true;
         }
 
@@ -494,8 +538,12 @@ class Coody_Homeslider extends Module
         $tab->active = 1;
         $tab->class_name = 'AdminCoody';
         $tab->id_parent = 0;
-        $tab->module = Module::isInstalled('ds_checkout') ? 'ds_checkout' : $this->name;
-        $tab->icon = 'extension';
+        if (Module::isInstalled('ds_checkout')) {
+            $tab->module = 'ds_checkout';
+        } else {
+            $tab->module = $this->name;
+        }
+        $tab->icon = '';
 
         foreach (Language::getLanguages(false) as $lang) {
             $tab->name[(int) $lang['id_lang']] = 'Coody';
